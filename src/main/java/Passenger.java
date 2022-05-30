@@ -30,7 +30,7 @@ public class Passenger {
 
     private static String getFormattedName(String name) {
         String[] nameArray = name.split(" ");
-        String lastName = nameArray[0].substring(0,nameArray[0].length() - 1);
+        String lastName = nameArray[0].substring(0,nameArray[0].length());
         String firstName = "";
         for (int i = 2; i < nameArray.length; i++) {
             firstName = firstName.concat(" " + nameArray[i]);
@@ -41,7 +41,7 @@ public class Passenger {
 
 
     public boolean passengerInRange(String minRange, String maxRange) {
-        System.out.println("try");
+
         try {
             if (maxRange.equals(null) && minRange.equals(null)) {
                 return true;
@@ -61,7 +61,6 @@ public class Passenger {
     }
 
     public boolean containsName(String name) {
-        System.out.println("try");
         try {
             if (name.equals(null)) {
                 return true;
@@ -73,87 +72,70 @@ public class Passenger {
     }
 
     public boolean sibSPMatch(String num) {
-        System.out.println("try");
+        if(num.equals("")) {
+            return true;
+        }
         try {
-            if (num.equals(null)) {
-                return true;
-            }
-            int num2 = Integer.parseInt(num);
-            return this.sibSp == num2;
-        } catch (NumberFormatException e) {
+            return this.sibSp == Integer.parseInt(num);
+        } catch (Exception e) {
             return false;
         }
     }
 
     public boolean parchMatch(String num) {
-        System.out.println("try");
+
+        if(num.equals("")) {
+            return true;
+        }
         try {
-            if (num.equals(null)) {
-                return true;
-            }
-            int num2 = Integer.parseInt(num);
-            return this.parch == num2;
-        } catch (NumberFormatException e) {
+            return this.parch == Integer.parseInt(num);
+        }
+        catch(Exception e) {
             return false;
         }
     }
 
-    public boolean ticketNumMatch(String num) {
-        System.out.println("try");
+    public boolean ticketNumMatch(String ticketNum) {
+        if(ticketNum.equals("")) {
+            return true;
+        }
         try {
-            if (num.equals(null)) {
-                return true;
-            }
-            int num2 = Integer.parseInt(num);
-            String temp = "";
-            for (int i = 0; i < this.ticket.length(); i++) {
-                if (Character.isDigit(this.ticket.charAt(i))) {
-                    temp += this.ticket.charAt(i);
-                }
-            }
-            int ticketNum = Integer.parseInt(temp);
-            return ticketNum == num2;
-        } catch (NumberFormatException e) {
+            return this.ticket.contains(ticketNum);
+        } catch (Exception e) {
             return false;
         }
+
     }
 
-    public boolean ticketFareMatch(String min, String max) {
-        System.out.println("try");
+    public boolean ticketFareMatch(String minRange, String maxRange) {
+        if(minRange.equals("") && maxRange.equals("")) {
+            return true;
+        }
         try {
-            if (min.equals(null) && max.equals(null)) {
-                return true;
+            float min = 0;
+            float max = Float.MAX_VALUE;
+            if(!minRange.equals("")) {
+                min = Float.parseFloat(minRange);
             }
-            float minimum = Float.parseFloat(min);
-            float maximum = Float.parseFloat(max);
-            return this.fare >= minimum && this.fare <= maximum;
-        } catch (NumberFormatException e) {
+            if(!maxRange.equals("")) {
+                max = Float.parseFloat(maxRange);
+            }
+            return this.fare >= min && this.fare <= max;
+        } catch (Exception e) {
             return false;
         }
     }
 
     public boolean cabinMatch(String cabin) {
-        System.out.println("try");
         try {
-            if (cabin.equals(null)) {
-                return true;
-            }
-            String temp = "";
-            for (int i = 0; i < this.cabin.length(); i++) {
-                if (Character.isDigit(this.cabin.charAt(i))) {
-                    temp += this.cabin.charAt(i);
-                }
-            }
-            int cabinNum = Integer.parseInt(temp);
-            return cabinNum == Integer.parseInt(cabin);
-        } catch (NumberFormatException e) {
+            return this.cabin.contains(cabin); //empty string in this case can be a filter due to empty strings present on the table
+        } catch (Exception e) {
             return false;
         }
     }
 
     public boolean filterClass(String pClass) {
-        System.out.println("try");
-        if (pClass.equals(null)) {
+        if (pClass.equals("")) {
             return true;
         }
         switch (pClass) {
@@ -175,42 +157,32 @@ public class Passenger {
     }
 
     public boolean filterSex(String sex) {
-        System.out.println("try");
+
+        if(sex.equals("All")) {
+            return true;
+        }
         try {
-            if (sex.equals(null)) {
-                return true;
-            }
-            return sex.equals(Constants.ALL) || sex.equals(this.sex);
+            return this.sex.equals(sex);
         } catch (Exception e) {
             return false;
         }
     }
 
     public boolean filterEmbarked(String embarked) {
-        System.out.println("try");
-        if (embarked.equals(null)) {
+        if (embarked.equals("")) {
             return true;
         }
         String thisEmbarked = this.embarked + "";
         return embarked.equals(Constants.ALL) || embarked.equals(thisEmbarked);
     }
 
+    public int getSurvived() {
+        return survived;
+    }
 
     @Override
     public String toString() {
-        return "Passenger{" +
-                "passengerId=" + passengerId +
-                ", survived=" + survived +
-                ", pClass=" + pClass +
-                ", name='" + name + '\'' +
-                ", sex='" + sex + '\'' +
-                ", age=" + age +
-                ", sibSp=" + sibSp +
-                ", parch=" + parch +
-                ", ticket='" + ticket + '\'' +
-                ", fare=" + fare +
-                ", cabin='" + cabin + '\'' +
-                ", embarked=" + embarked +
-                '}';
+        return this.passengerId + "," + this.survived + "," + this.pClass + "," + this.name + "," + this.sex + "," + this.age + "," +
+                this.sibSp + "," + this.parch + "," + this.ticket + "," + this.fare + "," + this.cabin + "," + this.embarked;
     }
 }

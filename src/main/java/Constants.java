@@ -38,6 +38,14 @@ public class Constants {
     public static final int MIN = 0;
     public static final int MAX = 891;
 
+    public static final int SURVIVED = 1;
+    public static final int EMPTY = 0;
+
+    public static final int RESULT_X = 500;
+    public static final int RESULT_Y = 40;
+    public static final int RESULT_WIDTH = 300;
+    public static final int RESULT_HEIGHT = 60;
+
 
 
 }
