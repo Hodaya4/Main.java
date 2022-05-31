@@ -176,8 +176,100 @@ public class Passenger {
         return embarked.equals(Constants.ALL) || embarked.equals(thisEmbarked);
     }
 
+    //CLASSES
+    public boolean firstClassSurvived() {
+        return this.pClass == Constants.FIRST_INT && this.survived == Constants.SURVIVED;
+    }
+    public boolean secondClassSurvived() {
+        return this.pClass == Constants.SECOND_INT && this.survived == Constants.SURVIVED;
+    }
+    public boolean thirdClassSurvived() {
+        return this.pClass == Constants.THIRD_INT && this.survived == Constants.SURVIVED;
+    }
+
+    //SEX
+    public boolean maleSurvived() {
+        return this.sex.equals(Constants.MALE) && this.survived == Constants.SURVIVED;
+    }
+    public boolean femaleSurvived() {
+        return this.sex.equals(Constants.FEMALE) && this.survived == Constants.SURVIVED;
+    }
+
+    //AGES
+    public boolean ages0to10() {
+        return (this.age <= Constants.AGE10 && this.age >= Constants.EMPTY) && this.survived == Constants.SURVIVED;
+    }
+    public boolean ages11to20() {
+        return (this.age <= Constants.AGE20 && this.age >= Constants.AGE11) && this.survived == Constants.SURVIVED;
+    }
+    public boolean ages21to30() {
+        return (this.age <= Constants.AGE30 && this.age >= Constants.AGE21) && this.survived == Constants.SURVIVED;
+    }
+    public boolean ages31to40() {
+        return (this.age <= Constants.AGE40 && this.age >= Constants.AGE31) && this.survived == Constants.SURVIVED;
+    }
+    public boolean ages41to50() {
+        return (this.age <= Constants.AGE50 && this.age >= Constants.AGE41) && this.survived == Constants.SURVIVED;
+    }
+    public boolean ages51above() {
+        return (this.age >= Constants.AGE51) && this.survived == Constants.SURVIVED;
+    }
+
+    //FAMILY
+    public boolean familySurvived() {
+        return (this.sibSp + this.parch > 0) && this.survived == Constants.SURVIVED;
+    }
+    public boolean noFamilySurvived() {
+        return (this.sibSp + this.parch == 0) && this.survived == Constants.SURVIVED;
+    }
+
+    //PRICE
+    public boolean priceLessThan10() {
+        return (this.fare < 10) && this.survived == Constants.SURVIVED;
+    }
+    public boolean price11to30() {
+        return (this.fare >= 11 && this.fare <= 30) && this.survived == Constants.SURVIVED;
+    }
+    public boolean priceAbove30() {
+        return (this.fare > 30) && this.survived == Constants.SURVIVED;
+    }
+
+    //EMBARKED
+    public boolean embarkedC() {
+        return this.embarked == Constants.C && this.survived == Constants.SURVIVED;
+    }
+    public boolean embarkedQ() {
+        return this.embarked == Constants.Q && this.survived == Constants.SURVIVED;
+    }
+    public boolean embarkedS() {
+        return this.embarked == Constants.S && this.survived == Constants.SURVIVED;
+    }
+
+
+    //GETTERS
     public int getSurvived() {
         return survived;
+    }
+    public int getpClass() {
+        return pClass;
+    }
+    public String getSex() {
+        return sex;
+    }
+    public int getAge() {
+        return age;
+    }
+    public int getSibSp() {
+        return sibSp;
+    }
+    public int getParch() {
+        return parch;
+    }
+    public float getFare() {
+        return fare;
+    }
+    public char getEmbarked() {
+        return embarked;
     }
 
     @Override

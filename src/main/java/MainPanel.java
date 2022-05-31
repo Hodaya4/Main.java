@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -18,18 +17,15 @@ public class MainPanel extends JPanel {
     private String valueClass;
     private String valueSex;
     private String valueEmbarked;
-    private int fileNumber = 0;
 
 
     public MainPanel (int x, int y, int width, int height) {
         this.setLayout(null);
         this.setBounds(x, y + Constants.MARGIN_FROM_TOP, width, height);
 
-
         File file = new File(Constants.PATH_TO_DATA_FILE); //this is the path to the data file
         ArrayList<Passenger> passengerData = new ArrayList<>();
         try {
-
             if (file.exists()) {
                 Scanner sc = new Scanner(file);
                 if (sc.hasNextLine()) {
@@ -70,8 +66,10 @@ public class MainPanel extends JPanel {
             textField_y += Constants.MARGIN_Y;
         }
 
-        String[] textLabels = {"Passenger Class:", "Passenger Sex:", "Embarked:", "Passenger Num Range, Min:", "Passenger Num Range, Max:",
-                "Passenger Name:", "Siblings/Spouses:", "Children/Parents:", "Ticket Number:", "Ticket Fare, Min:", "Ticket Fare, Max:", "Cabin:"};
+        String[] textLabels = {"Passenger Class:", "Passenger Sex:", "Embarked:", "Passenger Num Range, Min:",
+                "Passenger Num Range, Max:",
+                "Passenger Name:", "Siblings/Spouses:", "Children/Parents:", "Ticket Number:", "Ticket Fare, Min:",
+                "Ticket Fare, Max:", "Cabin:"};
 
         for (int j = 0; j < textLabels.length; j++) {
             JLabel jLabel = new JLabel(textLabels[j]);
@@ -86,19 +84,10 @@ public class MainPanel extends JPanel {
 
         JLabel result = new JLabel();
         result.setBounds(Constants.RESULT_X, Constants.RESULT_Y, Constants.RESULT_WIDTH, Constants.RESULT_HEIGHT);
-        Font resFont = new Font("resFont", Font.ITALIC, 16);
+        Font resFont = new Font("resFont", Font.ITALIC, Constants.RESULT_FONT);
         result.setFont(resFont);
         this.add(result);
 
-        //String valueNumRangeMin = "";
-        //String valueNumRangeMax = "";
-        //String valueName = "";
-        //String valueSibSP = "";
-        //String valueParch = "";
-        //String valueTicketNum = "";
-        //String valueTicketFareMin = "";
-        //String valueTicketFareMax = "";
-        //String valueCabin = "";
         this.valuesOfText = new String[9];
 
         filter.addActionListener((e) -> {
@@ -118,31 +107,27 @@ public class MainPanel extends JPanel {
             try {
                 String nameFile = "C:\\Users\\Hodaya\\Desktop\\titanic-master\\src\\main\\resources\\fileNumber.txt";
                 String nameNum = readFromFile(nameFile);
-                System.out.println(nameNum);
                 int name = Integer.parseInt(nameNum);
                 name++;
                 nameNum = name + "";
-                File newFile = new File(nameFile);
-                newFile.delete();
-                writeToFile(nameFile, nameNum);
+                writeToFile(nameNum, nameFile);
                 String path = new String("C:\\Users\\Hodaya\\Desktop\\titanic-master\\fileWriter\\" + nameNum + ".csv");
                 String columns = "PassengerId,Survived,Pclass,Name,Sex,Age,SibSp,Parch,Ticket,Fare,Cabin,Embarked";
-
-                for (Passenger passenger : filteredList) {
-                    String line = passenger.toString();
-                    writeToFile(line, path);
-
-
+                try {
+                    FileWriter fileWriter = new FileWriter(path);
+                    fileWriter.write(columns);
+                    for (Passenger passenger : filteredList) {
+                        String line = passenger.toString();
+                        fileWriter.write(line);
+                        fileWriter.write("\n");
+                    }
+                    fileWriter.close();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
                 }
-
-                //writeToFile(, path);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
-
-
-            System.out.println(filteredList.size());
-
         });
 
         this.classComboBox.addActionListener((e) -> {
@@ -154,6 +139,161 @@ public class MainPanel extends JPanel {
         this.embarkedComboBox.addActionListener((e) -> {
             this.valueEmbarked = embarkedComboBox.getSelectedItem().toString();
         });
+
+        JButton statistics = new JButton("create statistics file");
+        statistics.setBounds(Constants.STATISTICS_X, Constants.STATISTICS_Y, Constants.STATISTICS_WIDTH, Constants.STATISTICS_HEIGHT);
+        Font statFont = new Font("statFont", Font.BOLD, Constants.RESULT_FONT);
+        statistics.setFont(statFont);
+        this.add(statistics);
+
+        int firstClass = passengerData.stream().filter(passenger -> passenger.firstClassSurvived()).collect(Collectors.toList()).size();
+        int secondClass = passengerData.stream().filter(passenger -> passenger.secondClassSurvived()).collect(Collectors.toList()).size();
+        int thirdClass = passengerData.stream().filter(passenger -> passenger.thirdClassSurvived()).collect(Collectors.toList()).size();
+        int total1stClass = passengerData.stream().filter(passenger -> passenger.getpClass() ==
+                Constants.FIRST_INT).collect(Collectors.toList()).size();
+        int total2ndClass = passengerData.stream().filter(passenger -> passenger.getpClass() ==
+                Constants.SECOND_INT).collect(Collectors.toList()).size();
+        int total3rdClass = passengerData.stream().filter(passenger -> passenger.getpClass() ==
+                Constants.THIRD_INT).collect(Collectors.toList()).size();
+
+        int males = passengerData.stream().filter(passenger -> passenger.maleSurvived()).collect(Collectors.toList()).size();
+        int females = passengerData.stream().filter(passenger -> passenger.femaleSurvived()).collect(Collectors.toList()).size();
+        int totalMales = passengerData.stream().filter(passenger -> passenger.getSex() == Constants.MALE).
+                collect(Collectors.toList()).size();
+        int totalFemales = passengerData.stream().filter(passenger -> passenger.getSex() == Constants.FEMALE).
+                collect(Collectors.toList()).size();
+
+        int ages0To10 = passengerData.stream().filter(passenger -> passenger.ages0to10()).collect(Collectors.toList()).size();
+        int ages11To20 = passengerData.stream().filter(passenger -> passenger.ages11to20()).collect(Collectors.toList()).size();
+        int ages21To30 = passengerData.stream().filter(passenger -> passenger.ages21to30()).collect(Collectors.toList()).size();
+        int ages31To40 = passengerData.stream().filter(passenger -> passenger.ages31to40()).collect(Collectors.toList()).size();
+        int ages41To50 = passengerData.stream().filter(passenger -> passenger.ages41to50()).collect(Collectors.toList()).size();
+        int ages51Above = passengerData.stream().filter(passenger -> passenger.ages51above()).collect(Collectors.toList()).size();
+        int total0To10 = passengerData.stream().filter(passenger -> (passenger.getAge() <= Constants.AGE10 && passenger.getAge()
+                >= Constants.EMPTY)).collect(Collectors.toList()).size();
+        int total11To20 = passengerData.stream().filter(passenger -> (passenger.getAge() <= Constants.AGE20 && passenger.getAge()
+                >= Constants.AGE11)).collect(Collectors.toList()).size();
+        int total21To30 = passengerData.stream().filter(passenger -> (passenger.getAge() <= Constants.AGE30 && passenger.getAge()
+                >= Constants.AGE21)).collect(Collectors.toList()).size();
+        int total31To40 = passengerData.stream().filter(passenger -> (passenger.getAge() <= Constants.AGE40 && passenger.getAge()
+                >= Constants.AGE31)).collect(Collectors.toList()).size();
+        int total41To50 = passengerData.stream().filter(passenger -> (passenger.getAge() <= Constants.AGE50 && passenger.getAge()
+                >= Constants.AGE41)).collect(Collectors.toList()).size();
+        int total51Above = passengerData.stream().filter(passenger -> passenger.getAge() > Constants.AGE51).
+                collect(Collectors.toList()).size();
+
+        int familySurvived = passengerData.stream().filter(passenger -> passenger.familySurvived()).collect(Collectors.toList()).size();
+        int noFamilySurvived = passengerData.stream().filter(passenger -> passenger.noFamilySurvived()).collect(Collectors.toList()).size();
+        int totalFamSurvived = passengerData.stream().filter(passenger -> (passenger.getSibSp() + passenger.getParch() > Constants.EMPTY)).
+                collect(Collectors.toList()).size();
+        int totalNoFamSurvived = passengerData.stream().filter(passenger -> (passenger.getSibSp() + passenger.getParch() == Constants.EMPTY)).
+                collect(Collectors.toList()).size();
+
+        int priceLessThan10 = passengerData.stream().filter(passenger -> passenger.priceLessThan10()).collect(Collectors.toList()).size();
+        int price11To30 = passengerData.stream().filter(passenger -> passenger.price11to30()).collect(Collectors.toList()).size();
+        int priceAbove30 = passengerData.stream().filter(passenger -> passenger.priceAbove30()).collect(Collectors.toList()).size();
+        int totalPriceLessThan10 = passengerData.stream().filter(passenger -> passenger.getFare() < Constants.PRICE10).
+                collect(Collectors.toList()).size();
+        int totalPrice11To30 = passengerData.stream().filter(passenger -> (passenger.getFare() >= Constants.PRICE11 &&
+                        passenger.getFare() <= Constants.PRICE30)).
+                collect(Collectors.toList()).size();
+        int totalPriceAbove30 = passengerData.stream().filter(passenger -> passenger.getFare() > Constants.PRICE30).
+                collect(Collectors.toList()).size();
+
+        int cherbourg = passengerData.stream().filter(passenger -> passenger.embarkedC()).collect(Collectors.toList()).size();
+        int queenstown = passengerData.stream().filter(passenger -> passenger.embarkedQ()).collect(Collectors.toList()).size();
+        int southampton = passengerData.stream().filter(passenger -> passenger.embarkedS()).collect(Collectors.toList()).size();
+        int totalCherbourg = passengerData.stream().filter(passenger -> passenger.getEmbarked() == Constants.C).
+                collect(Collectors.toList()).size();
+        int totalQueenstown = passengerData.stream().filter(passenger -> passenger.getEmbarked() == Constants.Q).
+                collect(Collectors.toList()).size();
+        int totalSouthampton = passengerData.stream().filter(passenger -> passenger.getEmbarked() == Constants.S).
+                collect(Collectors.toList()).size();
+
+        //PERCENTAGES
+        float firstClassP = (float)firstClass*Constants.PERCENTAGES/total1stClass;
+        float secondClassP = (float)secondClass*Constants.PERCENTAGES/total2ndClass;
+        float thirdClassP = (float)thirdClass*Constants.PERCENTAGES/total3rdClass;
+        String[] byClass = {"Survival percentages by class:", "First - " + firstClassP + "%", "Second - " + secondClassP
+                + "%", "Third - " + thirdClassP + "%"};
+
+        float malesP = (float)males*Constants.PERCENTAGES/totalMales;
+        float femalesP = (float)females*Constants.PERCENTAGES/totalFemales;
+        String[] bySex = {"Survival percentages by Sex:", "Males - " + malesP + "%", "Females - " + femalesP + "%"};
+
+        float age0To10P = (float)ages0To10*Constants.PERCENTAGES/total0To10;
+        float age11To20P = (float)ages11To20*Constants.PERCENTAGES/total11To20;
+        float age21To30P = (float)ages21To30*Constants.PERCENTAGES/total21To30;
+        float age31To40P = (float)ages31To40*Constants.PERCENTAGES/total31To40;
+        float age41To50P = (float)ages41To50*Constants.PERCENTAGES/total41To50;
+        float agesAbove51P = (float)ages51Above*Constants.PERCENTAGES/total51Above;
+        String[] byAge = {"Survival percentages by age:", "Ages 0 To 10 - " + age0To10P + "%", "Ages 11 to 20 - " + age11To20P +
+                "%", "Ages 21 to 30 - " + age21To30P + "%", "Ages 31 to 40 - " + age31To40P + "%", "Ages 41 to 50 - " +
+                age41To50P + "%", "Ages 51 and Above - " + agesAbove51P + "%"};
+
+        float famSurvivedP = (float)familySurvived*Constants.PERCENTAGES/totalFamSurvived;
+        float noFamSurvivedP = (float)noFamilySurvived*Constants.PERCENTAGES/totalNoFamSurvived;
+        String[] byFamily = {"Survival percentages by family:", "Family Survived - " + famSurvivedP + "%", "No Family Survived - " +
+                noFamSurvivedP + "%"};
+
+        float priceLT10P = (float)priceLessThan10*Constants.PERCENTAGES/totalPriceLessThan10;
+        float price11To30P = (float)price11To30*Constants.PERCENTAGES/totalPrice11To30;
+        float priceAbove30P = (float)priceAbove30*Constants.PERCENTAGES/totalPriceAbove30;
+        String[] byPrice = {"Survival percentages by Price:", "Price less than 10 Pounds - " + priceLT10P + "%",
+                "Price between 11-30 pounds - " + price11To30P + "%", "Price above 30 pounds - " + priceAbove30P + "%"};
+
+        float cherbourgP = (float)cherbourg*Constants.PERCENTAGES/totalCherbourg;
+        float queenstownP = (float)queenstown*Constants.PERCENTAGES/totalQueenstown;
+        float southamptonP = (float)southampton*Constants.PERCENTAGES/totalSouthampton;
+        String[] byEmbark = {"Survival percentages by Embark:", "Cherbourg - " + cherbourgP + "%", "Queenstown - "
+                + queenstownP + "%", "Southampton - " + southamptonP + "%"};
+
+        JLabel created = new JLabel("Statistics file created successfully.");
+        created.setBounds(Constants.CREATED_X, Constants.CREATED_Y, Constants.CREATED_WIDTH, Constants.CREATED_HEIGHT);
+        created.setVisible(false);
+        this.add(created);
+
+
+
+        statistics.addActionListener((e) -> {
+            try {
+                String path = "C:\\Users\\Hodaya\\Desktop\\titanic-master\\statistics\\statistics.txt";
+                FileWriter fileWriter = new FileWriter(path);
+                for (String text : byClass) {
+                    fileWriter.write(text);
+                    fileWriter.write("\n");
+                }
+                for (String text : bySex) {
+                    fileWriter.write(text);
+                    fileWriter.write("\n");
+                }
+                for (String text : byAge) {
+                    fileWriter.write(text);
+                    fileWriter.write("\n");
+                }
+                for (String text : byFamily) {
+                    fileWriter.write(text);
+                    fileWriter.write("\n");
+                }
+                for (String text : byPrice) {
+                    fileWriter.write(text);
+                    fileWriter.write("\n");
+                }
+                for (String text : byEmbark) {
+                    fileWriter.write(text);
+                    fileWriter.write("\n");
+                }
+                fileWriter.close();
+
+                created.setVisible(true);
+
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+
+
+        });
+
 
 
 
@@ -167,21 +307,6 @@ public class MainPanel extends JPanel {
                 passenger.ticketFareMatch(this.valuesOfText[6], this.valuesOfText[7])).filter(passenger ->
                 passenger.cabinMatch(this.valuesOfText[8])).filter(passenger -> passenger.filterClass(this.valueClass)).filter(passenger ->
                 passenger.filterSex(this.valueSex)).filter(passenger -> passenger.filterEmbarked(this.valueEmbarked)).collect(Collectors.toList());
-        //List<Passenger> idRangeFilter = passengerData.stream().filter(passenger -> passenger.passengerInRange(this.valuesOfText[0], this.valuesOfText[1])).collect(Collectors.toList());
-        //List<Passenger> nameFilter = idRangeFilter.stream().filter(passenger -> passenger.containsName(this.valuesOfText[2])).collect(Collectors.toList());
-        //List<Passenger> sibsFilter = nameFilter.stream().filter(passenger -> passenger.sibSPMatch(this.valuesOfText[3])).collect(Collectors.toList());
-        //List<Passenger> parchFilter = sibsFilter.stream().filter(passenger -> passenger.parchMatch(this.valuesOfText[4])).collect(Collectors.toList());
-        //List<Passenger> ticketNumFilter = parchFilter.stream().filter(passenger -> passenger.ticketNumMatch(this.valuesOfText[5])).collect(Collectors.toList());
-        //List<Passenger> ticketFareFilter = ticketNumFilter.stream().filter(passenger -> passenger.ticketFareMatch(this.valuesOfText[6], this.valuesOfText[7])).collect(Collectors.toList());
-        //List<Passenger> cabinFilter = ticketFareFilter.stream().filter(passenger -> passenger.cabinMatch(this.valuesOfText[8])).collect(Collectors.toList());
-        //List<Passenger> sexFilter = cabinFilter.stream().filter(passenger -> passenger.filterSex(this.valueSex)).collect(Collectors.toList());
-        //List<Passenger> embarkedFilter = sexFilter.stream().filter(passenger -> passenger.filterEmbarked(this.valueEmbarked)).collect(Collectors.toList());
-        //List<Passenger> classFilter = embarkedFilter.stream().filter(passenger -> passenger.filterClass(this.valueClass)).collect(Collectors.toList());
-
-
-        //return classFilter;
-
-
     }
 
 
